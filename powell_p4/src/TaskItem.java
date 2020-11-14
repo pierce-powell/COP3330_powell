@@ -26,16 +26,13 @@ public class TaskItem {
         if(checkIsDateValid(dueDate))
             this.dueDate = dueDate;
         else
-            throw new IllegalArgumentException("Error, date must be of the form yyyy-mm-dd using valid days and months," +
-                    "check your response, and try again!");
+            throw new IllegalArgumentException("Error, date must be of the form yyyy-mm-dd using valid days and months");
 
         this.isComplete = false;
     }
 
     private boolean checkIsStringValid(String name){
-        if(name.length() <= 0)
-            return false;
-        else return true;
+        return name.length() > 0;
     }
 
     private boolean checkIsDateValid(String date){
@@ -58,8 +55,7 @@ public class TaskItem {
         if(checkIsDateValid(dueDate))
             this.dueDate = dueDate;
         else
-            throw new IllegalArgumentException("Error, date must be of the form yyyy-mm-dd using valid days and months," +
-                    "check your response, and try again!");
+            throw new IllegalArgumentException("Error, date must be of the form yyyy-mm-dd using valid days and months");
     }
 
     public void setTaskComplete(){
@@ -70,8 +66,28 @@ public class TaskItem {
         this.isComplete = false;
     }
 
+    public boolean getIsComplete() {
+        return isComplete;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
     @Override
     public String toString() {
         return ""+title+" "+description+" "+dueDate;
+    }
+
+    public void setDesription(String description) {
+        this.description = description;
     }
 }

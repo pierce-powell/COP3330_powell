@@ -7,84 +7,108 @@ public class TaskList {
     private ArrayList<TaskItem> currentTaskList = new ArrayList<>();
 
 
-    public static void taskManager(int usersInput, int currentMenu){
-        if(currentMenu == 0){
-            mainMenuManager(usersInput);
-        }else if (currentMenu == 1){
-            taskListMenuManager(usersInput);
-        }
-    }
-
-
-    private static void mainMenuManager(int userInput){
-        if(userInput == 1)
-            createNewList();
-        else if(userInput == 2)
-            loadExistingList();
-    }
-
-
-    private static void taskListMenuManager(int userInput){
-        if(userInput == 1)
-            printList();
-        else if(userInput == 2)
-            addItemToList();
-        else if(userInput == 3)
-            editItemInList();
-        else if(userInput == 4)
-            removeItemFromList();
-        else if(userInput == 5)
-            markItemAsCompleted();
-        else if(userInput == 6)
-            unmarkItemAsCompleted();
-        else if(userInput == 7)
-            saveList();
-    }
-
-    private static void saveList() {
+    public void saveList() {
         System.out.printf("Saving list\n");
     }
 
-    private static void unmarkItemAsCompleted() {
-        System.out.printf("unmarking item\n");
+    public void removeItemFromList(int index) { currentTaskList.remove(index); }
+
+    public void editItemInList(int index, TaskItem newlyEditedTask) { currentTaskList.set(index, newlyEditedTask); }
+
+    public void addItemToList(TaskItem currentTask) { currentTaskList.add(currentTask); }
+
+    public void printList() {
+        System.out.printf("Current List%n------------%n");
+        for(int i = 0; i < getNumberOfTasks(); i++){
+            printCurrentTask(i);
+        }
     }
 
-    private static void markItemAsCompleted() {
-        System.out.printf("marking as complete\n");
+    public void loadExistingList() { System.out.printf("loading\n"); }
+
+    public void createNewList() { System.out.printf("creating\n"); }
+
+    public int getNumberOfTasks() {return currentTaskList.size();}
+
+    private void printIndicatorIfCurrentTaskComplete(int index){
+        if(isTheTaskCompleted(index))
+            System.out.printf(" ***  ");
     }
 
-    private static void removeItemFromList() {
-        System.out.printf("removing\n");
+    public void printCurrentTask(int index){
+        System.out.printf("%d) ", index);
+        printIndicatorIfCurrentTaskComplete(index);
+        System.out.printf("[%s]  %s:  %s%n",
+                currentTaskList.get(index).getDueDate(),
+                currentTaskList.get(index).getTitle(),
+                currentTaskList.get(index).getDescription());
     }
 
-    private static void editItemInList() {
-        System.out.printf("editing\n");
+    private boolean isIndexValid(int index){
+        if(index < getNumberOfTasks() && index >= 0)
+            return true;
+        else
+            return false;
     }
 
-    private static void addItemToList() {
-        System.out.printf("adding\n");
+    public void printListOfCompletedTasks(){
+        System.out.printf("Compeleted Tasks%n------------%n");
+        for(int i = 0; i < getNumberOfTasks(); i++){
+            if(isTheTaskCompleted(i))
+                printCurrentTask(i);
+        }
     }
 
-    private static void printList() {
-        System.out.printf("printing\n");
+    public void printListOfIncompletedTasks(){
+        System.out.printf("Incompeleted Tasks%n------------%n");
+        for(int i = 0; i < getNumberOfTasks(); i++){
+            if(!isTheTaskCompleted(i))
+                printCurrentTask(i);
+        }
     }
 
-    private static void loadExistingList() {
-        System.out.printf("loading\n");
+    private void setCurrentTaskToComplete(int index){ currentTaskList.get(index).setTaskComplete(); }
+
+    public void unmarkItemAsCompleted(int index) {
+        if(isIndexValid(index))
+            setCurrentTaskToIncomplete(index);
+
+        else
+            throw new IndexOutOfBoundsException("Error: index listed is out of bounds of the current list!");;
     }
 
-    private static void createNewList() {
-        System.out.printf("creating\n");
+    public void markItemAsCompleted(int index) {
+        if(isIndexValid(index))
+            setCurrentTaskToComplete(index);
+        else
+            throw new IndexOutOfBoundsException("Error: index listed is out of bounds of the current list!");
     }
 
+    private void setCurrentTaskToIncomplete(int index){ currentTaskList.get(index).setTaskIncomplete(); }
 
-    //has 0 or more items
-    //user can create a new task list
-    //save to the current task list
-    //add an item
-    //edit an item
-    //mark an item as completed
-    //unmark that same item
+    public void removeTheItem(int index){
+        if(isIndexValid(index))
+            removeItemFromList(index);
+        else
+            throw new IndexOutOfBoundsException("Error: index listed is out of bounds of the current list!");
+    }
 
-    //we will have our error handling for input here (assuming it's reading stuff into the obj)
+    public void editTheItem(int index, TaskItem newlyEditedTask){
+        if(isIndexValid(index))
+            editItemInList(index, newlyEditedTask);
+        else
+            throw new IndexOutOfBoundsException("Error: index listed is out of bounds of the current list!");
+    }
+
+    public void checkIfEditIndexIsValid(int index){
+        if(!isIndexValid(index))
+            throw new IndexOutOfBoundsException("Error: index listed is out of bounds of the current list!");
+    }
+
+    private boolean isTheTaskCompleted(int index){ return currentTaskList.get(index).getIsComplete(); }
+
+    //This is a method ONLY used for JUNIT testing purposes
+    public TaskItem getObjectFromSpecificIndex(int index){
+        return currentTaskList.get(index);
+    }
 }
