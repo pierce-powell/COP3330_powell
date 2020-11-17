@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -7,7 +10,6 @@ import java.util.Scanner;
 public class App {
 
     private static Scanner userIn = new Scanner(System.in);
-
 
     //menu interface goes here
     public static void main(String[] args) {
@@ -104,7 +106,7 @@ public class App {
         if (userInput == 1) {
             currentTask.createNewList();
         } else if (userInput == 2) {
-            currentTask.loadExistingList();
+            readFromFile(currentTask);
         }
     }
 
@@ -127,7 +129,7 @@ public class App {
             //Takes in the item to unmark, send its to task list?
             markItemAsIncomplete(currentTaskList);
         } else if (userInput == 7) {
-            currentTaskList.saveList();
+            writeToFile(currentTaskList);
         }
     }
 
@@ -187,66 +189,143 @@ public class App {
         }
     }
 
-        private static void markItemAsCompeleted (TaskList currentTaskList){
-            if (currentTaskList.getNumberOfTasks() == 0) {
-                System.out.printf("Error, there are no tasks in the list to remove!%n");
-                return;
-            }
-            while (true) {
-                try {
-                    currentTaskList.printListOfIncompletedTasks();
-                    currentTaskList.markItemAsCompleted(getIndexFromUser());
-                    break;
-                } catch (IndexOutOfBoundsException exc) {
-                    System.out.println(exc.getMessage() + " Please try again!");
-                } catch (InputMismatchException exc) {
-                    System.out.println("Index must be a valid integer! Please try again.");
-                    userIn.nextLine();
-                }
-            }
+    private static void markItemAsCompeleted(TaskList currentTaskList) {
+        if (currentTaskList.getNumberOfTasks() == 0) {
+            System.out.printf("Error, there are no tasks in the list to remove!%n");
+            return;
         }
-
-        private static void markItemAsIncomplete (TaskList currentTaskList){
-            if (currentTaskList.getNumberOfTasks() == 0) {
-                System.out.printf("Error, there are no tasks in the list to remove!%n");
-                return;
-            }
-            while (true) {
-                try {
-                    currentTaskList.printListOfCompletedTasks();
-                    currentTaskList.unmarkItemAsCompleted(getIndexFromUser());
-                    break;
-
-                } catch (IndexOutOfBoundsException exc) {
-                    System.out.println(exc.getMessage() + " Please try again!");
-                } catch (InputMismatchException exc) {
-                    System.out.println("Index must be a valid integer! Please try again.");
-                    userIn.nextLine();
-                }
-            }
-        }
-
-        private static void editItemFromList (TaskList currentTask){
-            if (currentTask.getNumberOfTasks() == 0) {
-                System.out.printf("Error, there are no tasks in the list to remove!%n");
-                return;
-            }
-            while (true) {
-                try {
-                    currentTask.printList();
-                    int index = getIndexFromUser();
-                    currentTask.checkIfEditIndexIsValid(index);
-                    currentTask.editTheItem(index, getUserInputToCreateTaskItem());
-                    break;
-                } catch (IndexOutOfBoundsException exc) {
-                    System.out.println(exc.getMessage() + " please try again!");
-                } catch (InputMismatchException exc) {
-                    System.out.println("Index must be a valid integer! Please try again.");
-                    userIn.nextLine();
-                } catch (IllegalArgumentException exc) {
-                    System.out.println(exc.getMessage() + " Please try again.");
-                }
+        while (true) {
+            try {
+                currentTaskList.printListOfIncompletedTasks();
+                currentTaskList.markItemAsCompleted(getIndexFromUser());
+                break;
+            } catch (IndexOutOfBoundsException exc) {
+                System.out.println(exc.getMessage() + " Please try again!");
+            } catch (InputMismatchException exc) {
+                System.out.println("Index must be a valid integer! Please try again.");
+                userIn.nextLine();
             }
         }
     }
+
+    private static void markItemAsIncomplete(TaskList currentTaskList) {
+        if (currentTaskList.getNumberOfTasks() == 0) {
+            System.out.printf("Error, there are no tasks in the list to remove!%n");
+            return;
+        }
+        while (true) {
+            try {
+                currentTaskList.printListOfCompletedTasks();
+                currentTaskList.unmarkItemAsCompleted(getIndexFromUser());
+                break;
+
+            } catch (IndexOutOfBoundsException exc) {
+                System.out.println(exc.getMessage() + " Please try again!");
+            } catch (InputMismatchException exc) {
+                System.out.println("Index must be a valid integer! Please try again.");
+                userIn.nextLine();
+            }
+        }
+    }
+
+    private static void editItemFromList(TaskList currentTask) {
+        if (currentTask.getNumberOfTasks() == 0) {
+            System.out.printf("Error, there are no tasks in the list to remove!%n");
+            return;
+        }
+        while (true) {
+            try {
+                currentTask.printList();
+                int index = getIndexFromUser();
+                currentTask.checkIfEditIndexIsValid(index);
+                currentTask.editTheItem(index, getUserInputToCreateTaskItem());
+                break;
+            } catch (IndexOutOfBoundsException exc) {
+                System.out.println(exc.getMessage() + " please try again!");
+            } catch (InputMismatchException exc) {
+                System.out.println("Index must be a valid integer! Please try again.");
+                userIn.nextLine();
+            } catch (IllegalArgumentException exc) {
+                System.out.println(exc.getMessage() + " Please try again.");
+            }
+        }
+    }
+
+    //All the stuff to write to files
+    public static void writeToFile(TaskList myList) {
+        userIn.nextLine();
+        String filename = getFileName();
+        if (doesFileExist(filename))
+            if (doYouWantToOverRide())
+                myList.write(filename, myList);
+            else
+                writeToFile(myList);
+        else
+            myList.write(filename, myList);
+    }
+
+    private static boolean doYouWantToOverRide() {
+        String userResponse;
+        System.out.println("This file already exists, do you want to override?" +
+                " Information previously saved in the file will be lost! Enter y if you wish to continue, anything else to quit.");
+        userResponse = userIn.next();
+        return didTheyWantToContinue(userResponse);
+    }
+
+    private static boolean didTheyWantToContinue(String response) {
+        if (response.toLowerCase().charAt(0) == 'y')
+            return true;
+        else
+            return false;
+    }
+
+    private static String getFileName() {
+        System.out.println("Enter the file name: ");
+        return userIn.nextLine();
+    }
+
+
+    private static boolean doesFileExist(String filename) {
+        File filecheck = new File(filename);
+        return filecheck.exists();
+    }
+
+    private static File getFileNameAndCheck() {
+        String filename = getFileName();
+        if (!doesFileExist(filename)) {
+            System.out.println("File not found!");
+            getFileNameAndCheck();
+        }
+        File fileToRead = new File(filename);
+
+        return fileToRead;
+    }
+
+    private static void readFromFile(TaskList myList) {
+        userIn.nextLine();
+        File fileToRead = getFileNameAndCheck();
+        ArrayList<TaskItem> tempArray = getFileInputToCreateTaskItemListFromFile(fileToRead, myList);
+        myList.loadExistingList(tempArray);
+
+    }
+
+
+    //all the stuff to read from files
+    private static ArrayList<TaskItem> getFileInputToCreateTaskItemListFromFile(File fileToRead, TaskList myList) {
+        ArrayList<TaskItem> tempList = new ArrayList<>();
+
+        while (true) {
+            try {
+                Scanner fileScanner = new Scanner(fileToRead);
+                while (fileScanner.hasNext())
+                    tempList.add(new TaskItem(fileScanner.nextLine(), fileScanner.nextLine(), fileScanner.nextLine()));
+                break;
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found!");
+                readFromFile(myList);
+            }
+        }
+        return tempList;
+    }
+}
 

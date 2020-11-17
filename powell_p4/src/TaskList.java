@@ -1,14 +1,17 @@
 //This class does all of our manipulations to the data and stores it in the list
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Formatter;
 
 public class TaskList {
 
     private ArrayList<TaskItem> currentTaskList = new ArrayList<>();
 
 
-    public void saveList() {
-        System.out.printf("Saving list\n");
+    public void saveList(File filename) {
+
+
     }
 
     public void removeItemFromList(int index) { currentTaskList.remove(index); }
@@ -24,9 +27,12 @@ public class TaskList {
         }
     }
 
-    public void loadExistingList() { System.out.printf("loading\n"); }
+    public void loadExistingList(ArrayList<TaskItem> newList) {
+        currentTaskList = newList;
+        System.out.println("Task List Loaded!");
+    }
 
-    public void createNewList() { System.out.printf("creating\n"); }
+    public void createNewList() { System.out.printf("New task list created!\n"); }
 
     public int getNumberOfTasks() {return currentTaskList.size();}
 
@@ -107,8 +113,22 @@ public class TaskList {
 
     private boolean isTheTaskCompleted(int index){ return currentTaskList.get(index).getIsComplete(); }
 
-    //This is a method ONLY used for JUNIT testing purposes
     public TaskItem getObjectFromSpecificIndex(int index){
         return currentTaskList.get(index);
+    }
+
+    public void write(String filename, TaskList myList) {
+        try(Formatter output = new Formatter(filename)) {
+            for(int i = 0; i < myList.getNumberOfTasks(); i++) {
+                TaskItem data = myList.getObjectFromSpecificIndex(i);
+                output.format("%s;%s;%s%n", data.getTitle(), data.getDescription(), data.getDueDate());
+                System.out.println("file saved in "+ filename);
+            }
+        } catch (FileNotFoundException ex) {
+            System.out.println("Unable to find the file... If the file exists, double check it ends in .txt");
+            App.writeToFile(myList);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

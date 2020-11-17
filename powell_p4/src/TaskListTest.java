@@ -123,7 +123,7 @@ public class TaskListTest {
         TaskItem t = new TaskItem("a", "b", "1111-11-11");
         TaskList p = new TaskList();
         p.addItemToList(t);
-        assertThrows(IndexOutOfBoundsException.class, () -> {         p.getObjectFromSpecificIndex(1).getDueDate();;
+        assertThrows(IndexOutOfBoundsException.class, () -> {         p.getObjectFromSpecificIndex(1).getDueDate();
         } );
     }
 
@@ -132,8 +132,9 @@ public class TaskListTest {
         TaskItem t = new TaskItem("a", "b", "1111-11-11");
         TaskList p = new TaskList();
         p.addItemToList(t);
-        assertThrows(IndexOutOfBoundsException.class, () -> {         p.getObjectFromSpecificIndex(1).getDueDate();;
-        } );
+        //assertDoesNotThrow is not recognized for some reason. But Performing this check means there
+        //was no exceptions thrown
+        assertEquals("1111-11-11", p.getObjectFromSpecificIndex(0).getDueDate());
     }
 
     @Test
@@ -141,10 +142,9 @@ public class TaskListTest {
         TaskItem t = new TaskItem("a", "b", "1111-11-11");
         TaskList p = new TaskList();
         p.addItemToList(t);
-        //assertDoesNotThrow is not recognized for some reason. But Performing this check means there
-            //was no exceptions thrown
-        assertEquals("1111-11-11", p.getObjectFromSpecificIndex(0).getDueDate());
-        }
+        assertThrows(IndexOutOfBoundsException.class, () -> {         p.getObjectFromSpecificIndex(1).getTitle();
+        } );
+    }
 
     @Test
     public void removingTaskItemsDecreasesSize(){
@@ -154,11 +154,54 @@ public class TaskListTest {
         p.removeItemFromList(0);
         assertEquals(0, p.getNumberOfTasks());
     }
-    /* gettingTaskItemTitleSucceedsWithValidIndex()
-     removingTaskItemsFailsWithInvalidIndex()
-     savedTaskListCanBeLoaded()
-     uncompletingTaskItemChangesStatus()
-     uncompletingTaskItemFailsWithInvalidIndex()
-    newTaskListIsEmpty()*/
+
+    @Test
+    public void gettingTaskItemTitleSucceedsWithValidIndex(){
+        TaskItem t = new TaskItem("a", "b", "1111-11-11");
+        TaskList p = new TaskList();
+        p.addItemToList(t);
+        //assertDoesNotThrow is not recognized for some reason. But Performing this check means there
+        //was no exceptions thrown
+        assertEquals("a", p.getObjectFromSpecificIndex(0).getTitle());
+    }
+
+    @Test
+    public void removingTaskItemsFailsWithInvalidIndex(){
+        TaskItem t = new TaskItem("a", "b", "1111-11-11");
+        TaskList p = new TaskList();
+        p.addItemToList(t);
+        assertThrows(IndexOutOfBoundsException.class, () -> {         p.removeTheItem(1);
+        } );
+
+    }
+
+    @Test
+    public void uncompletingTaskItemChangesStatus(){
+        TaskItem t = new TaskItem("a", "b", "1111-11-11");
+        t.setTaskComplete();
+        t.setTaskIncomplete();
+        assertEquals(false, t.getIsComplete());
+    }
+
+    @Test
+    public void uncompletingTaskItemFailsWithInvalidIndex(){
+        TaskItem t = new TaskItem("a", "b", "1111-11-11");
+        TaskList p = new TaskList();
+        p.addItemToList(t);
+        assertThrows(IndexOutOfBoundsException.class, () -> {         p.getObjectFromSpecificIndex(1).setTaskIncomplete();
+        } );
+
+    }
+
+    @Test
+    public void newTaskListIsEmpty(){
+        TaskList p = new TaskList();
+        assertEquals(0, p.getNumberOfTasks());
+    }
+
+    /* savedTaskListCanBeLoaded()*/
+
+
+
 }
 
