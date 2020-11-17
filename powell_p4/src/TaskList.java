@@ -27,9 +27,8 @@ public class TaskList {
         }
     }
 
-    public void loadExistingList(ArrayList<TaskItem> newList) {
-        currentTaskList = newList;
-        System.out.println("Task List Loaded!");
+    public void loadExistingList() {
+        System.out.println("Load Feature Not Implemented");
     }
 
     public void createNewList() { System.out.printf("New task list created!\n"); }

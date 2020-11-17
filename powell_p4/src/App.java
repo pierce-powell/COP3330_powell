@@ -303,9 +303,9 @@ public class App {
 
     private static void readFromFile(TaskList myList) {
         userIn.nextLine();
-        File fileToRead = getFileNameAndCheck();
-        ArrayList<TaskItem> tempArray = getFileInputToCreateTaskItemListFromFile(fileToRead, myList);
-        myList.loadExistingList(tempArray);
+        //File fileToRead = getFileNameAndCheck();
+       // ArrayList<TaskItem> tempArray = getFileInputToCreateTaskItemListFromFile(fileToRead, myList);
+        myList.loadExistingList();
 
     }
 
