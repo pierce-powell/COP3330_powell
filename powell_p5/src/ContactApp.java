@@ -7,62 +7,56 @@ import java.util.Scanner;
 //App class is the hub for interacting with the user and printin stuff
 
 //The manager for the rest of our code
-public class TaskApp extends App {
+public class ContactApp extends App{
 
     private static final Scanner userIn = new Scanner(System.in);
-    private TaskList taskList;
+    private ContactList contactList;
 
     //wrappers that delegate the work
-    public void runTaskApp() {
+    public void runContactApp() {
         int currentMenuToDisplay = 0;
         int userSelection = -1;
 
 
-        TaskList taskListManager = new TaskList();
+        ContactList contactListManager = new ContactList();
 
         while (currentMenuToDisplay != -1) {
-            TaskApp curApp = new TaskApp();
+            ContactApp curApp = new ContactApp();
             curApp.displayMenu(currentMenuToDisplay);
             userSelection = curApp.getUserIn(currentMenuToDisplay);
-            curApp.taskManager(userSelection, currentMenuToDisplay, taskListManager);
+            curApp.contactManager(userSelection, currentMenuToDisplay, contactListManager);
             currentMenuToDisplay = curApp.processUserInToUpdateMenu(userSelection, currentMenuToDisplay);
         }
     }
-    private void taskManager(int usersInput, int currentMenu, TaskList currentTaskList) {
+    private void contactManager(int usersInput, int currentMenu, ContactList currentContactList) {
         if (currentMenu == 0) {
-            mainMenuManager(usersInput, currentTaskList);
+            mainMenuManager(usersInput, currentContactList);
         } else if (currentMenu == 1) {
-            taskListMenuManager(usersInput, currentTaskList);
+            contactListMenuManager(usersInput, currentContactList);
         }
     }
-    private void mainMenuManager(int userInput, TaskList currentTask) {
+    private void mainMenuManager(int userInput, ContactList currentContact) {
         if (userInput == 1) {
-            currentTask.createNewList();
+            currentContact.createNewList();
         } else if (userInput == 2) {
-            readFromFile(currentTask);
+            readFromFile(currentContact);
         }
         else if (userInput == 3)
             currentMenuToDisplay = -1;
     }
-    private void taskListMenuManager(int userInput, TaskList currentTaskList) {
+    private void contactListMenuManager(int userInput, ContactList currentContactList) {
         if (userInput == 1) {
-            currentTaskList.printList();
+            currentContactList.printList();
         } else if (userInput == 2) {
-            //takes in user input send to task list to add and item
-            currentTaskList.addItemToList(getUserInputToCreateTaskItem());
+            //takes in user input send to contact list to add and item
+            currentContactList.addItemToList(getUserInputToCreateContactItem());
         } else if (userInput == 3) {
-            //takes in user input, sends it to taskList?
-            editItemFromList(currentTaskList);
+            //takes in user input, sends it to contactList?
+            editItemFromList(currentContactList);
         } else if (userInput == 4) {
-            //Takes in the item to remove, sends it to task list
-            removeItemFromList(currentTaskList);
+            //Takes in the item to remove, sends it to contact list
+            removeItemFromList(currentContactList);
         } else if (userInput == 5) {
-            //Takes in the item to mark, send its to task list?
-            markItemAsCompeleted(currentTaskList);
-        } else if (userInput == 6) {
-            //Takes in the item to unmark, send its to task list?
-            markItemAsIncomplete(currentTaskList);
-        } else if (userInput == 7) {
             System.out.println("DONT FORGET TO IMPLEMENT!!!!!!!!!!!!!!");
         }
     }
@@ -74,10 +68,8 @@ public class TaskApp extends App {
                 "2) Add an item%n" +
                 "3) Edit an item%n" +
                 "4) Remove an item%n" +
-                "5) Mark an item as completed%n" +
-                "6) Unmark an item as completed%n" +
-                "7) Save the current list%n" +
-                "8) Return to the main menu%n%n");
+                "5) Save the current list%n" +
+                "6) Return to the main menu%n%n");
     }
     private void displayMainMenu() {
         System.out.printf("%nMAIN MENU%n---------%n");
@@ -114,40 +106,46 @@ public class TaskApp extends App {
             if (userSelection > 3 || userSelection < 1)
                 throw new IllegalArgumentException("Menu Selection out of bounds! Must be an integer 1 - 3 for the main menu!%n");
         } else if (currentMenuToDisplay == 1) {
-            if (userSelection > 8 || userSelection < 1)
-                throw new IllegalArgumentException("Menu selection out of bounds! Must be an integer 1 - 8 for the task selection menu!%n");
+            if (userSelection > 6 || userSelection < 1)
+                throw new IllegalArgumentException("Menu selection out of bounds! Must be an integer 1 - 6 for the contact selection menu!%n");
         }
     }
-    private TaskItem getUserInputToCreateTaskItem() {
-        TaskItem item = null;
+    private ContactItem getUserInputToCreateContactItem() {
+        ContactItem item = null;
         userIn.nextLine();
         while (true) {
             try {
-                item = new TaskItem(getTitle(), getDescription(), getDueDate());
+                item = new ContactItem(getFName(), getLName() ,getEmailAddr(), getPhoneNum());
                 break;
             } catch (IllegalArgumentException exc) {
-                System.out.println(exc.getMessage() + " Task not created! Try again");
+                System.out.println(exc.getMessage() + " Contact not created! Try again");
             }
         }
         return item;
     }
-    private String getTitle() {
-        String title;
-        System.out.printf("Please enter a Title: ");
-        title = userIn.nextLine();
+    private String getFName() {
+        String FName;
+        System.out.printf("Please enter a first name: ");
+        FName = userIn.nextLine();
 
-        return title;
+        return FName;
     }
-    private String getDescription() {
-        System.out.printf("Please enter a description: ");
+    private String getLName() {
+        String LName;
+        System.out.printf("Please enter a last name: ");
+        LName = userIn.nextLine();
+        return LName;
+    }
+    private String getPhoneNum() {
+        System.out.printf("Please enter a phone number: ");
         return userIn.nextLine();
     }
-    private String getDueDate() {
-        System.out.printf("Please enter a dueDate (yyyy-mm-dd): ");
+    private String getEmailAddr() {
+        System.out.printf("Please enter a email address: ");
         return userIn.nextLine();
     }
     private int getIndexFromUser() {
-        System.out.printf("Please select which task%n>");
+        System.out.printf("Please select which contact%n>");
         return userIn.nextInt();
     }
 
@@ -166,15 +164,15 @@ public class TaskApp extends App {
         }
         return -1;
     }
-    private void removeItemFromList(TaskList currentTaskList) {
-        if (currentTaskList.getNumberOfTasks() == 0) {
-            System.out.printf("Error, there are no tasks in the list to remove!%n");
+    private void removeItemFromList(ContactList currentContactList) {
+        if (currentContactList.getNumberOfContacts() == 0) {
+            System.out.printf("Error, there are no contacts in the list to remove!%n");
             return;
         }
         while (true) {
             try {
-                currentTaskList.printList();
-                currentTaskList.removeTheItem(getIndexFromUser());
+                currentContactList.printList();
+                currentContactList.removeTheItem(getIndexFromUser());
                 break;
             } catch (IndexOutOfBoundsException exc) {
                 System.out.println(exc.getMessage() + "please try again!%n");
@@ -184,54 +182,17 @@ public class TaskApp extends App {
             }
         }
     }
-    private void markItemAsCompeleted(TaskList currentTaskList) {
-        if (currentTaskList.getNumberOfTasks() == 0) {
-            System.out.printf("Error, there are no tasks in the list to remove!%n");
+    private void editItemFromList(ContactList currentContact) {
+        if (currentContact.getNumberOfContacts() == 0) {
+            System.out.printf("Error, there are no contacts in the list to remove!%n");
             return;
         }
         while (true) {
             try {
-                currentTaskList.printListOfIncompletedTasks();
-                currentTaskList.markItemAsCompleted(getIndexFromUser());
-                break;
-            } catch (IndexOutOfBoundsException exc) {
-                System.out.println(exc.getMessage() + " Please try again!");
-            } catch (InputMismatchException exc) {
-                System.out.println("Index must be a valid integer! Please try again.");
-                userIn.nextLine();
-            }
-        }
-    }
-    private void markItemAsIncomplete(TaskList currentTaskList) {
-        if (currentTaskList.getNumberOfTasks() == 0) {
-            System.out.printf("Error, there are no tasks in the list to remove!%n");
-            return;
-        }
-        while (true) {
-            try {
-                currentTaskList.printListOfCompletedTasks();
-                currentTaskList.unmarkItemAsCompleted(getIndexFromUser());
-                break;
-
-            } catch (IndexOutOfBoundsException exc) {
-                System.out.println(exc.getMessage() + " Please try again!");
-            } catch (InputMismatchException exc) {
-                System.out.println("Index must be a valid integer! Please try again.");
-                userIn.nextLine();
-            }
-        }
-    }
-    private void editItemFromList(TaskList currentTask) {
-        if (currentTask.getNumberOfTasks() == 0) {
-            System.out.printf("Error, there are no tasks in the list to remove!%n");
-            return;
-        }
-        while (true) {
-            try {
-                currentTask.printList();
+                currentContact.printList();
                 int index = getIndexFromUser();
-                currentTask.checkIfEditIndexIsValid(index);
-                currentTask.editTheItem(index, getUserInputToCreateTaskItem());
+                currentContact.checkIfEditIndexIsValid(index);
+                currentContact.editTheItem(index, getUserInputToCreateContactItem());
                 break;
             } catch (IndexOutOfBoundsException exc) {
                 System.out.println(exc.getMessage() + " please try again!");
@@ -276,10 +237,9 @@ public class TaskApp extends App {
 
         return fileToRead;
     }
-    private void readFromFile(TaskList myList) {
+    private void readFromFile(ContactList myList) {
         userIn.nextLine();
         //File fileToRead = getFileNameAndCheck();
-        // ArrayList<TaskItem> tempArray = getFileInputToCreateTaskItemListFromFile(fileToRead, myList);
         myList.loadExistingList();
 
     }

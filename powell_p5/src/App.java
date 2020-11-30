@@ -35,7 +35,7 @@ public class App {
         else if(selection == 2) {
             //run AppContact
             ContactApp newContactApp = new ContactApp();
-            newContactApp.run();
+            newContactApp.runContactApp();
         }
         else if(selection == 3)
             System.exit(1);
