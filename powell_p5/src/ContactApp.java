@@ -17,7 +17,6 @@ public class ContactApp extends App{
         int currentMenuToDisplay = 0;
         int userSelection = -1;
 
-
         ContactList contactListManager = new ContactList();
 
         while (currentMenuToDisplay != -1) {

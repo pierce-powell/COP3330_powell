@@ -3,7 +3,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
-public class TaskList extends List {
+public class TaskList {
 
     private ArrayList<TaskItem> currentTaskList;
 
