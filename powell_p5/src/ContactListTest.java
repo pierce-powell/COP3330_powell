@@ -113,6 +113,13 @@ public class ContactListTest {
     }
     @Test
     public void savedContactListCanBeLoaded(){
-
+        ContactList t = new ContactList();
+        ContactItem i = new ContactItem("joe", "bob", "joebob@email.com", "727-420-6969");
+        t.createNewList();
+        t.addItemToList(i);
+        t.saveList("savehere");
+        ContactList loadList = new ContactList();
+        loadList.loadExistingList("savehere");
+        assertEquals(1, loadList.getNumberOfContacts());
     }
 }

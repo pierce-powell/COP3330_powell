@@ -44,6 +44,9 @@ public class TaskApp extends App {
         else if (userInput == 3)
             currentMenuToDisplay = -1;
     }
+
+
+
     private void taskListMenuManager(int userInput, TaskList currentTaskList) {
         if (userInput == 1) {
             currentTaskList.printList();
@@ -63,7 +66,7 @@ public class TaskApp extends App {
             //Takes in the item to unmark, send its to task list?
             markItemAsIncomplete(currentTaskList);
         } else if (userInput == 7) {
-            System.out.println("DONT FORGET TO IMPLEMENT!!!!!!!!!!!!!!");
+            saveToFile(currentTaskList);
         }
     }
 
@@ -146,6 +149,10 @@ public class TaskApp extends App {
         System.out.printf("Please enter a dueDate (yyyy-mm-dd): ");
         return userIn.nextLine();
     }
+    private String getFileNameFromUser(){
+        System.out.printf("Please enter the filename: ");
+        return userIn.nextLine();
+    }
     private int getIndexFromUser() {
         System.out.printf("Please select which task%n>");
         return userIn.nextInt();
@@ -223,7 +230,7 @@ public class TaskApp extends App {
     }
     private void editItemFromList(TaskList currentTask) {
         if (currentTask.getNumberOfTasks() == 0) {
-            System.out.printf("Error, there are no tasks in the list to remove!%n");
+            System.out.printf("Error, there are no tasks in the list to edit!%n");
             return;
         }
         while (true) {
@@ -243,46 +250,33 @@ public class TaskApp extends App {
             }
         }
     }
-
-    //All the stuff to write to files
-    private boolean doYouWantToOverRide() {
-        String userResponse;
-        System.out.println("This file already exists, do you want to override?" +
-                " Information previously saved in the file will be lost! Enter y if you wish to continue, anything else to quit.");
-        userResponse = userIn.next();
-        return didTheyWantToContinue(userResponse);
+    private void readFromFile(TaskList currentTask) {
+           while(true) {
+               try {
+                   userIn.nextLine();
+                   //call the proper method and send it the filename to load
+                   currentTask.loadExistingList(getFileNameFromUser());
+                   break;
+               } catch (IllegalArgumentException exc) {
+                   System.out.println(exc.getMessage());
+               }
+           }
     }
-    private boolean didTheyWantToContinue(String response) {
-        if (response.toLowerCase().charAt(0) == 'y')
-            return true;
-        else
-            return false;
-    }
-    private static String getFileName() {
-        System.out.println("Enter the file name: ");
-        return userIn.nextLine();
-    }
-    private boolean doesFileExist(String filename) {
-        File filecheck = new File(filename);
-        return filecheck.exists();
-    }
-    private File getFileNameAndCheck() {
-        String filename = getFileName();
-        if (!doesFileExist(filename)) {
-            System.out.println("File not found!");
-            getFileNameAndCheck();
+    private void saveToFile(TaskList currentTask) {
+        if (currentTask.getNumberOfTasks() == 0) {
+            System.out.printf("Error, there are no tasks in the list to save!%n");
+            return;
         }
-        File fileToRead = new File(filename);
-
-        return fileToRead;
+        while (true){
+            try{
+                userIn.nextLine();
+                //call the proper method and send it the filename to load
+                String fileName = getFileNameFromUser();
+                currentTask.saveList(fileName);
+                break;
+            } catch(IllegalArgumentException exc){
+                System.out.println(exc.getMessage());
+            }
+        }
     }
-    private void readFromFile(TaskList myList) {
-        userIn.nextLine();
-        //File fileToRead = getFileNameAndCheck();
-        // ArrayList<TaskItem> tempArray = getFileInputToCreateTaskItemListFromFile(fileToRead, myList);
-        myList.loadExistingList();
-
-    }
-
-
 }

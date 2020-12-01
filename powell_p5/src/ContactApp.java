@@ -56,7 +56,7 @@ public class ContactApp extends App{
             //Takes in the item to remove, sends it to contact list
             removeItemFromList(currentContactList);
         } else if (userInput == 5) {
-            System.out.println("DONT FORGET TO IMPLEMENT!!!!!!!!!!!!!!");
+            saveToFile(currentContactList);
         }
     }
 
@@ -147,6 +147,10 @@ public class ContactApp extends App{
         System.out.printf("Please select which contact%n>");
         return userIn.nextInt();
     }
+    private String getFileNameFromUser() {
+        System.out.printf("Please enter the filename: ");
+        return userIn.nextLine();
+    }
 
     //main worker wrapper functions for the stuff that needs direct user interaction
     private int processUserInToUpdateMenu(int userSelection, int currentMenuToDisplay) {
@@ -156,9 +160,9 @@ public class ContactApp extends App{
             else if(userSelection == 3)
                 return -1;
         } else if (currentMenuToDisplay == 1) {
-            if (userSelection != 8)
+            if (userSelection != 6)
                 return 1;
-            else if (userSelection == 8)
+            else if (userSelection == 6)
                 return 0;
         }
         return -1;
@@ -205,43 +209,36 @@ public class ContactApp extends App{
     }
 
     //All the stuff to write to files
-    private boolean doYouWantToOverRide() {
-        String userResponse;
-        System.out.println("This file already exists, do you want to override?" +
-                " Information previously saved in the file will be lost! Enter y if you wish to continue, anything else to quit.");
-        userResponse = userIn.next();
-        return didTheyWantToContinue(userResponse);
-    }
-    private boolean didTheyWantToContinue(String response) {
-        if (response.toLowerCase().charAt(0) == 'y')
-            return true;
-        else
-            return false;
-    }
-    private static String getFileName() {
-        System.out.println("Enter the file name: ");
-        return userIn.nextLine();
-    }
-    private boolean doesFileExist(String filename) {
-        File filecheck = new File(filename);
-        return filecheck.exists();
-    }
-    private File getFileNameAndCheck() {
-        String filename = getFileName();
-        if (!doesFileExist(filename)) {
-            System.out.println("File not found!");
-            getFileNameAndCheck();
-        }
-        File fileToRead = new File(filename);
-
-        return fileToRead;
-    }
-    private void readFromFile(ContactList myList) {
+    private void readFromFile(ContactList currentContact) {
         userIn.nextLine();
-        //File fileToRead = getFileNameAndCheck();
-        myList.loadExistingList();
-
+        while(true) {
+            try {
+                //call the proper method and send it the filename to load
+                currentContact.loadExistingList(getFileNameFromUser());
+                break;
+            } catch (IllegalArgumentException exc) {
+                System.out.println(exc.getMessage());
+                userIn.nextLine();
+            }
+        }
     }
+    private void saveToFile(ContactList currentContact) {
+        if (currentContact.getNumberOfContacts() == 0) {
+            System.out.printf("Error, there are no tasks in the list to save!%n");
+            return;
+        }
+        userIn.nextLine();
+        while (true){
+            try{
 
-
+                //call the proper method and send it the filename to load
+                String fileName = getFileNameFromUser();
+                currentContact.saveList(fileName);
+                break;
+            } catch(IllegalArgumentException exc){
+                System.out.println(exc.getMessage());
+                userIn.nextLine();
+            }
+        }
+    }
 }

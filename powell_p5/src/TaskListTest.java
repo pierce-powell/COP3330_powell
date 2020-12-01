@@ -240,9 +240,15 @@ public class TaskListTest {
         assertEquals(0, p.getNumberOfTasks());
     }
 
-    /* savedTaskListCanBeLoaded()*/
-
-
-
+    @Test
+    public void savedTaskListCanBeLoaded(){
+        TaskList t = new TaskList();
+        TaskItem i = new TaskItem("titl", "dec", "1111-11-11");
+        t.createNewList();
+        t.addItemToList(i);
+        t.saveList("saveTaskhere");
+        TaskList loadList = new TaskList();
+        loadList.loadExistingList("saveTaskhere");
+        assertEquals(1, loadList.getNumberOfTasks());
+    }
 }
-

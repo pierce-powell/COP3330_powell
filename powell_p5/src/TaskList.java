@@ -1,16 +1,16 @@
 //This class does all of our manipulations to the data and stores it in the list
 
 import java.io.*;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.Scanner;
 
-public class TaskList {
+public class TaskList extends List{
 
     private ArrayList<TaskItem> currentTaskList;
 
-    public void saveList(File filename) {
-
-
-    }
 
     //wrappers that call some of the worker functions
     public void removeTheItem(int index){
@@ -26,9 +26,6 @@ public class TaskList {
             throw new IndexOutOfBoundsException("Error: index listed is out of bounds of the current list!");
     }
     public void addItemToList(TaskItem currentTask) { currentTaskList.add(currentTask); }
-    public void loadExistingList() {
-        System.out.println("I swear the list is loaded, just exit the program and take my word for it, please bro please, mom said I can't play the xbox if I get points off");
-    }
     public void unmarkItemAsCompleted(int index) {
         if(isIndexValid(index))
             setCurrentTaskToIncomplete(index);
@@ -78,7 +75,75 @@ public class TaskList {
     private void setCurrentTaskToIncomplete(int index){ currentTaskList.get(index).setTaskIncomplete(); }
     private void removeItemFromList(int index) { currentTaskList.remove(index); }
     private void editTheItemInList(int index, TaskItem newlyEditedTask) { currentTaskList.set(index, newlyEditedTask); }
+    @Override
+    public void saveList(String filename) {
+        try(Formatter outputToFile = new Formatter(filename)){
+            //output the identity to ensure its one of our folders when loaded
+            outputToFile.format("task list%n");
+            for(int i = 0; i < currentTaskList.size(); i++){
+                outputToFile.format("%s%n", currentTaskList.get(i).getDueDate()); //new line is crucial for our load
+                outputToFile.format("%s%n", currentTaskList.get(i).getTitle());
+                outputToFile.format("%s%n", currentTaskList.get(i).getDescription());
+                if(currentTaskList.get(i).getIsComplete())
+                    outputToFile.format("true%n");
+                else
+                    outputToFile.format("false%n");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void loadExistingList(String filename) {
+        //back up the list just in case
+        ArrayList<TaskItem> backupList = new ArrayList<>();
+        backupList = currentTaskList;
+        currentTaskList = new ArrayList<>();
 
+        try(Scanner inputFromFile = new Scanner(Paths.get(filename))) {
+            //make sure our file has our identifier key
+            String ident = inputFromFile.nextLine();
+            if(ident.equals("task list")){
+                //its a match
+                while(inputFromFile.hasNext()) {
+                    String curDueDate = inputFromFile.nextLine();
+                    String curTitle = inputFromFile.nextLine();
+                    String curDesc = inputFromFile.nextLine();
+                    String curIsComplete = inputFromFile.nextLine();
+
+                    TaskItem newItem = new TaskItem(curTitle, curDesc, curDueDate);
+
+                    if(curIsComplete.equals("true"))
+                        newItem.setTaskComplete();
+                    else
+                        newItem.setTaskIncomplete();
+
+                    addItemToList(newItem);
+                }
+            }
+            else{
+                //this isn't one of our previously saved files
+                currentTaskList = backupList;
+                throw new IllegalArgumentException("Error! The filename provided has either been modified outside of the application" +
+                        " or was not saved using the application! List restored to what it was before load!");
+            }
+        } catch (FileNotFoundException exc) {
+            //revert the list
+            currentTaskList = backupList;
+            throw new IllegalArgumentException("Error loading the tasks! The filename you entered was not found, reverted to old list!");
+
+        }catch (NoSuchFileException exc){
+            currentTaskList = backupList;
+            throw new IllegalArgumentException("Error loading the tasks! The filename you entered was not found, reverted to old list!");
+        }
+        catch (IOException e) {
+            //unknown exception, so let it crash
+            e.printStackTrace();
+        }
+        //check if the file name is a valid file that exists
+
+
+    }
     //helper functions
     public int getNumberOfTasks() {return currentTaskList.size();}
     private void printIndicatorIfCurrentTaskComplete(int index){
